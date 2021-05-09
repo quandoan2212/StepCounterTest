@@ -3,73 +3,79 @@ package com.minhquan.stepcounter.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.minhquan.stepcounter.App;
-
 public class SharedPreferencesUtils {
-    private static final String PREF_NAME = "Step_History";
-    private static SharedPreferencesUtils mInstance;
-    private SharedPreferences mSharedPreferences;
+    private Context context;
 
-    private SharedPreferencesUtils(){
-        mSharedPreferences = App.self().getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
+    private String FILE_NAME = "Step_history";
+
+
+
+    public SharedPreferencesUtils(String FILE_NAME) {
+        this.FILE_NAME = FILE_NAME;
+
+    }
+    public SharedPreferencesUtils(Context context) {
+        this.context=context;
+
     }
 
-    public static SharedPreferencesUtils getInstance(){
-        if(mInstance == null){
-            mInstance = new SharedPreferencesUtils();
-        }
-        return mInstance;
-    }
 
-    @SuppressWarnings("unchecked")
-    public <T> T get(String key, Class<T> anonymousClass){
-        if(anonymousClass == String.class){
-            return (T) mSharedPreferences.getString(key, "");
-        }else if(anonymousClass == Boolean.class){
-            return (T) Boolean.valueOf(mSharedPreferences.getBoolean(key,false));
-        }else if(anonymousClass == Float.class){
-            return (T) Float.valueOf(mSharedPreferences.getFloat(key,0));
-        }else if(anonymousClass == Integer.class){
-            return  (T) Integer.valueOf(mSharedPreferences.getInt(key,0));
-        }else if(anonymousClass == Long.class){
-            return (T) Long.valueOf(mSharedPreferences.getLong(key,0));
-        }
-        return null;
-    }
+    public void setParam(String key, Object object) {
 
-    @SuppressWarnings("unchecked")
-    public <T> T get(String key, Class<T> anonymousClass, Object dataDef){
-        if(anonymousClass == String.class){
-            return (T) mSharedPreferences.getString(key, (String) dataDef);
-        }else if(anonymousClass == Boolean.class){
-            return (T) Boolean.valueOf(mSharedPreferences.getBoolean(key,(Boolean) dataDef));
-        }else if(anonymousClass == Float.class){
-            return (T) Float.valueOf(mSharedPreferences.getFloat(key,(Float) dataDef));
-        }else if(anonymousClass == Integer.class){
-            return  (T) Integer.valueOf(mSharedPreferences.getInt(key,(Integer) dataDef));
-        }else if(anonymousClass == Long.class){
-            return (T) Long.valueOf(mSharedPreferences.getLong(key,(Long) dataDef));
+        String type = object.getClass().getSimpleName();
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        if ("String".equals(type)) {
+            editor.putString(key,  object.toString());
+        } else if ("Integer".equals(type)) {
+            editor.putInt(key, (Integer) object);
+        } else if ("Boolean".equals(type)) {
+            editor.putBoolean(key, (Boolean) object);
+        } else if ("Float".equals(type)) {
+            editor.putFloat(key, (Float) object);
+        } else if ("Long".equals(type)) {
+            editor.putLong(key, (Long) object);
         }
-        return null;
-    }
 
-    public <T> void put(String key, T data){
-        SharedPreferences.Editor editor = mSharedPreferences.edit();
-        if(data instanceof String){
-            editor.putString(key, (String) data);
-        }else if(data instanceof Boolean){
-            editor.putBoolean(key,(Boolean) data);
-        }else if(data instanceof Integer){
-            editor.putInt(key,(Integer) data);
-        }else if(data instanceof Float) {
-            editor.putFloat(key, (Float) data);
-        }else if(data instanceof Long) {
-            editor.putLong(key, (Long) data);
-        }
         editor.apply();
     }
 
-    public void clear(){
-        mSharedPreferences.edit().clear().apply();
+
+    public Object getParam(String key, Object defaultObject) {
+        String type = defaultObject.getClass().getSimpleName();
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+
+        if ("String".equals(type)) {
+            return sp.getString(key, (String) defaultObject);
+        } else if ("Integer".equals(type)) {
+            return sp.getInt(key, (Integer) defaultObject);
+        } else if ("Boolean".equals(type)) {
+            return sp.getBoolean(key, (Boolean) defaultObject);
+        } else if ("Float".equals(type)) {
+            return sp.getFloat(key, (Float) defaultObject);
+        } else if ("Long".equals(type)) {
+            return sp.getLong(key, (Long) defaultObject);
+        }
+
+        return null;
+    }
+
+
+    public void remove( String key) {
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.remove(key);
+        editor.commit();
+    }
+
+    public void clear() {
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sp.edit();
+        editor.clear();
+        editor.commit();
     }
 }

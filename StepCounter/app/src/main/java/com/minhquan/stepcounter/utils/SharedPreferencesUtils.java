@@ -3,6 +3,8 @@ package com.minhquan.stepcounter.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import java.util.Map;
+
 public class SharedPreferencesUtils {
     private Context context;
 
@@ -60,6 +62,12 @@ public class SharedPreferencesUtils {
         }
 
         return null;
+    }
+
+    public Map<String,?> getAll(){
+        SharedPreferences sp = context.getSharedPreferences(FILE_NAME,
+                Context.MODE_PRIVATE);
+        return sp.getAll();
     }
 
 
